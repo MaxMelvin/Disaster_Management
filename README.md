@@ -18,6 +18,39 @@ Built for learning end-to-end ML system architecture.
 
 ---
 
+## 🏗 Project Structure
+
+```
+root/
+├── backend/
+│   ├── data_pipeline.py      # Data loading, feature engineering, severity classification
+│   ├── train.py               # RandomForestClassifier training and evaluation
+│   ├── optimizer.py           # PuLP linear programming resource optimization
+│   ├── main.py                # FastAPI endpoints (/predict, /optimize)
+│   ├── generate_dataset.py    # Synthetic dataset generator
+│   ├── disaster_data.csv      # Training dataset
+│   ├── model.pkl              # Trained model (generated, git-ignored)
+│   ├── requirements.txt       # Python dependencies
+│   └── test_backend.py        # Backend tests
+│
+├── frontend/
+│   ├── src/
+│   │   ├── components/
+│   │   │   ├── DisasterForm.jsx    # Input form
+│   │   │   ├── SeverityBadge.jsx   # Color-coded severity display
+│   │   │   ├── ResourceCards.jsx   # Resource allocation cards
+│   │   │   └── ResourceChart.jsx   # Bar chart visualization
+│   │   ├── services/api.js         # Axios API client
+│   │   ├── App.jsx                 # Main application
+│   │   └── main.jsx                # Entry point
+│   ├── package.json
+│   └── vite.config.js
+│
+└── README.md
+```
+
+---
+
 ## 🧠 Tech Stack
 
 ### 🔙 Backend
@@ -36,101 +69,103 @@ Built for learning end-to-end ML system architecture.
 
 ---
 
-## 🏗 System Architecture
-
-
----
-
-## 📊 ML Logic
-
-Severity Score:
-0.5 * log(1 + deaths)
-
-0.3 * log(1 + affected)
-
-0.2 * log(1 + damage_usd)
-
-
-Classified into:
-- 🟢 Low
-- 🟡 Medium
-- 🔴 High
-
----
-
-## 📦 Resource Allocation
-
-| Severity | Food Kits | Medical Units | Shelters |
-|-----------|-----------|---------------|-----------|
-| Low       | 500       | 20            | 100       |
-| Medium    | 3000      | 120           | 800       |
-| High      | 15000     | 500           | 5000      |
-
-Optimization Objective:
-> Minimize total cost while meeting demand and staying within budget.
-
----
-
-## 🚀 How to Run
+## 🚀 Getting Started
 
 ### Backend
 
 ```bash
 cd backend
 pip install -r requirements.txt
-python train.py
-uvicorn main:app --reload
 
-Frontend
+# Generate dataset and train model
+python generate_dataset.py
+python train.py
+
+# Start API server
+uvicorn main:app --reload
+```
+
+The API will be available at `http://localhost:8000`. Interactive docs at `http://localhost:8000/docs`.
+
+### Frontend
+
+```bash
 cd frontend
 npm install
 npm run dev
+```
 
+The frontend will be available at `http://localhost:5173`.
 
-📌 API Endpoints
-POST /predict
+---
 
-Returns severity classification.
-
-POST /optimize
-
-Returns optimized resource allocation plan.
-
-🎯 Features
+## 🎯 Features
 
 ✅ ML-based severity prediction
-
 ✅ Budget-constrained optimization
-
 ✅ Clean API design
-
 ✅ Modular architecture
-
 ✅ Modern UI
 
-🔬 Learning Outcomes
+---
 
-End-to-end ML pipeline
+## 📌 API Endpoints
 
-Feature engineering
+### POST /predict
+Predict disaster severity level.
 
-Model evaluation
+**Request:**
+```json
+{
+  "disaster_type": "Flood",
+  "deaths": 150,
+  "affected": 50000,
+  "damage_usd": 5000000
+}
+```
 
-Linear programming
+**Response:**
+```json
+{
+  "severity_level": "Medium"
+}
+```
 
-Full-stack integration
+### POST /optimize
+Optimize resource allocation within budget.
 
-📈 Future Improvements
+**Request:**
+```json
+{
+  "severity_level": "Medium",
+  "budget": 1000000
+}
+```
 
-🔍 SHAP explainability
+**Response:**
+```json
+{
+  "resource_plan": {
+    "food_kits": 3000,
+    "medical_units": 120,
+    "shelters": 800
+  },
+  "total_cost": 454000
+}
+```
 
-🐳 Docker deployment
+---
 
-📊 Model monitoring
+## 🔬 Running Tests
 
-☁ Cloud hosting
+```bash
+cd backend
+python -m pytest test_backend.py -v
+```
 
-🏁 Status
+---
+
+## 🏁 Status
 
 🟢 Functional
 🔵 Educational Project
