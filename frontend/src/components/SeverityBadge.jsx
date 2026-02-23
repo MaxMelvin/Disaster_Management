@@ -1,14 +1,51 @@
-const COLORS = {
-  Low: "bg-green-100 text-green-800 border-green-300",
-  Medium: "bg-yellow-100 text-yellow-800 border-yellow-300",
-  High: "bg-red-100 text-red-800 border-red-300",
+import React from 'react';
+
+const SEVERITY_CONFIG = {
+  Low: { class: 'severity-low', emoji: '🟢', label: 'LOW' },
+  Medium: { class: 'severity-medium', emoji: '🟡', label: 'MED' },
+  High: { class: 'severity-high', emoji: '🔴', label: 'HIGH' },
 };
 
-export default function SeverityBadge({ level }) {
-  const colorClass = COLORS[level] || "bg-gray-100 text-gray-800 border-gray-300";
+export default function SeverityBadge({ level, confidence }) {
+  const cfg = SEVERITY_CONFIG[level] || SEVERITY_CONFIG.Low;
+
   return (
-    <span className={`inline-block px-4 py-2 rounded-full text-lg font-bold border-2 ${colorClass}`}>
-      {level} Severity
-    </span>
+    <div className="flex flex-col items-center gap-3">
+      {/* Severity Ring */}
+      <div className="relative">
+        <div
+          className={`severity-badge ${cfg.class} px-5 py-2 rounded-full font-black text-sm uppercase tracking-widest`}
+        >
+          {cfg.emoji} {level || 'Unknown'}
+        </div>
+        {/* Pulse ring */}
+        <div
+          className={`absolute inset-0 rounded-full ${cfg.class}`}
+          style={{
+            animation: 'pulse-ring 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+            border: '2px solid var(--sev-color)',
+            opacity: 0.3,
+          }}
+        />
+      </div>
+
+      {/* Confidence Meter */}
+      {confidence != null && (
+        <div className="flex flex-col items-center gap-1">
+          <div className="w-20 h-1.5 rounded-full overflow-hidden" style={{ background: 'rgba(255,255,255,0.06)' }}>
+            <div
+              className="h-full rounded-full transition-all duration-1000"
+              style={{
+                width: `${Math.round(confidence * 100)}%`,
+                background: `linear-gradient(90deg, var(--sev-color), transparent)`,
+              }}
+            />
+          </div>
+          <span className="text-[10px] font-bold uppercase tracking-widest" style={{ color: '#64748b' }}>
+            {Math.round(confidence * 100)}% Conf.
+          </span>
+        </div>
+      )}
+    </div>
   );
 }

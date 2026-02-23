@@ -7,11 +7,14 @@ from contextlib import asynccontextmanager
 
 import joblib
 import pandas as pd
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Response
+import io
+import csv
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 
 from optimizer import optimize_resources
+from storage import load_storage, save_storage, update_inventory, add_history, get_inventory, get_history, get_stats, get_alerts
 
 # Load trained model at startup
 MODEL_PATH = os.path.join(os.path.dirname(__file__), "model.pkl")
@@ -48,6 +51,15 @@ app.add_middleware(
 )
 
 
+# --- Root Route ---
+@app.get("/")
+def read_root():
+    return {
+        "message": "Disaster Resource Allocation API is running",
+        "endpoints": ["/predict", "/optimize", "/warehouse", "/history", "/export/history", "/health", "/docs"]
+    }
+
+
 # --- Request / Response schemas ---
 
 class PredictRequest(BaseModel):
@@ -59,6 +71,8 @@ class PredictRequest(BaseModel):
 
 class PredictResponse(BaseModel):
     severity_level: str
+    confidence: float
+    feature_importance: dict[str, float]
 
 
 class OptimizeRequest(BaseModel):
@@ -99,8 +113,26 @@ def predict(req: PredictRequest) -> PredictResponse:
             df[col] = 0.0
     df = df[model_features]
 
+    # Predict class and probabilities
     prediction = model.predict(df)[0]
-    return PredictResponse(severity_level=prediction)
+    probabilities = model.predict_proba(df)[0]
+    classes = list(model.classes_)
+    confidence = float(max(probabilities))
+
+    # Calculate Feature Importance (simulating SHAP impact for this specific prediction)
+    # For RandomForest, we can use global importances or specific contribution
+    # Here we simplify with global importance but formatted for the UI
+    importance = {}
+    for feat, score in zip(model_features, model.feature_importances_):
+        # Only include non-zero or interesting features
+        if score > 0.01:
+            importance[feat] = float(score)
+
+    return PredictResponse(
+        severity_level=prediction,
+        confidence=confidence,
+        feature_importance=importance
+    )
 
 
 @app.post("/optimize", response_model=OptimizeResponse)
@@ -109,9 +141,75 @@ def optimize(req: OptimizeRequest) -> OptimizeResponse:
     result = optimize_resources(req.severity_level, req.budget)
     if "error" in result:
         return OptimizeResponse(error=result["error"])
+    
+    # Track optimization in history and deduct from inventory
+    update_inventory(result["resource_plan"])
+    # Note: We don't have the predict request here, but in a real app we'd link them.
+    # For now, we record a simplified history entry or just the optimization.
+    add_history({"severity": req.severity_level}, result)
+
     return OptimizeResponse(
         resource_plan=result["resource_plan"],
         total_cost=result["total_cost"],
+    )
+
+
+@app.get("/warehouse")
+def get_warehouse_status():
+    """Get current inventory levels."""
+    return get_inventory()
+
+
+@app.get("/history")
+def get_all_history():
+    """Get all past prediction and optimization history."""
+    return get_history()
+
+
+@app.get("/stats")
+def get_dashboard_stats():
+    """Get aggregate KPIs for the dashboard."""
+    return get_stats()
+
+
+@app.get("/alerts")
+def get_system_alerts():
+    """Get active inventory alerts."""
+    return get_alerts()
+
+
+@app.get("/export/history")
+def export_history_csv():
+    """Export historical data as a CSV file."""
+    history = get_history()
+    if not history:
+        raise HTTPException(status_code=404, detail="No history found to export.")
+
+    output = io.StringIO()
+    writer = csv.writer(output)
+    
+    # Header
+    writer.writerow(["Timestamp", "Severity", "Total Cost", "Food Kits", "Medical Units", "Shelters"])
+    
+    # Rows
+    for entry in history:
+        prediction = entry.get("prediction", {})
+        optimization = entry.get("optimization", {})
+        plan = optimization.get("resource_plan", {})
+        writer.writerow([
+            entry.get("timestamp"),
+            prediction.get("severity"),
+            optimization.get("total_cost"),
+            plan.get("food_kits"),
+            plan.get("medical_units"),
+            plan.get("shelters")
+        ])
+    
+    output.seek(0)
+    return Response(
+        content=output.getvalue(),
+        media_type="text/csv",
+        headers={"Content-Disposition": "attachment; filename=disaster_history.csv"}
     )
 
 

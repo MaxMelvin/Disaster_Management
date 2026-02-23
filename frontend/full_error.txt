@@ -1,0 +1,123 @@
+﻿
+> dm-frontend@0.0.0 dev
+> vite
+
+
+  [32m[1mVITE[22m v7.3.1[39m  [2mready in [0m[1m670[22m[2m[0m ms[22m
+
+  [32mÔ×£[39m  [1mLocal[22m:   [36mhttp://localhost:[1m5173[22m/[39m
+[2m  [32mÔ×£[39m  [1mNetwork[22m[2m: use [22m[1m--host[22m[2m to expose[22m
+[2m[32m  Ô×£[39m[22m[2m  press [22m[1mh + enter[22m[2m to show help[22m
+node.exe : X [ERROR] 
+Could not resolve 
+"react-is"
+At line:1 char:1
++ & "C:\Program Files
+\nodejs/node.exe" "C:
+\Users\DELL\AppData\R
+oaming\n ...
++ ~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~
+    + CategoryInfo   
+           : NotSpe  
+  cified: (X [ERRO   
+ R] Could not res    
+olve "react-is":    
+String) [], Remo    
+teException
+    + FullyQualified 
+   ErrorId : Native  
+  CommandError
+ 
+
+    node_modules/rech
+arts/es6/util/ReactUt
+ils.js:3:27:
+      3 Ôöé import { 
+isFragment } from 
+'react-is';
+        ÔòÁ          
+                  
+~~~~~~~~~~
+
+  You can mark the 
+path "react-is" as 
+external to exclude 
+it from the bundle, 
+which will remove 
+this error and leave 
+the unresolved path 
+in the bundle.
+
+E:\Projects\Disaster 
+Management\Disaster_M
+anagement\frontend\no
+de_modules\esbuild\li
+b\main.js:1467
+  let error = new 
+Error(text);
+              ^
+
+Error: [31mError 
+during dependency 
+optimization:
+
+[39m[31mX [41;31m[
+[41;97mERROR[41;31m
+][0m [1mCould not 
+resolve 
+"react-is"[0m
+
+    node_modules/rech
+arts/es6/util/ReactUt
+ils.js:3:27:
+[37m      3 Ôöé 
+import { isFragment 
+} from 
+[32m'react-is'[37m;
+        ÔòÁ          
+                  
+[32m~~~~~~~~~~[0m
+
+  You can mark the 
+path "react-is" as 
+external to exclude 
+it from the bundle, 
+which will remove 
+this error and leave 
+the unresolved path 
+in the bundle.
+
+
+    at 
+failureErrorWithLog (
+E:\Projects\Disaster 
+Management\Disaster_M
+anagement\frontend\no
+de_modules\esbuild\li
+b\main.js:1467:15)
+    at 
+E:\Projects\Disaster 
+Management\Disaster_M
+anagement\frontend\no
+de_modules\esbuild\li
+b\main.js:926:25
+    at 
+E:\Projects\Disaster 
+Management\Disaster_M
+anagement\frontend\no
+de_modules\esbuild\li
+b\main.js:1345:9
+    at process.proces
+sTicksAndRejections (
+node:internal/process
+/task_queues:105:5) {
+  errors: 
+[Getter/Setter],
+  warnings: 
+[Getter/Setter]
+}
+
+Node.js v22.20.0

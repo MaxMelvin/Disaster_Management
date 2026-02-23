@@ -1,0 +1,37 @@
+{
+    "inventory": {
+        "food_kits": 44000,
+        "medical_units": 1760,
+        "shelters": 8400
+    },
+    "history": [
+        {
+            "timestamp": "2026-02-24T01:17:56.508479",
+            "prediction": {
+                "severity": "Medium"
+            },
+            "optimization": {
+                "resource_plan": {
+                    "food_kits": 3000,
+                    "medical_units": 120,
+                    "shelters": 800
+                },
+                "total_cost": 454000
+            }
+        },
+        {
+            "timestamp": "2026-02-24T01:36:59.262641",
+            "prediction": {
+                "severity": "Medium"
+            },
+            "optimization": {
+                "resource_plan": {
+                    "food_kits": 3000,
+                    "medical_units": 120,
+                    "shelters": 800
+                },
+                "total_cost": 454000
+            }
+        }
+    ]
+}
